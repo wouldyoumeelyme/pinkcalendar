@@ -23,14 +23,15 @@
   }
   :root[data-theme="dark"] { --bg: #3d2b34; --ink: #f1dde6; --mute: #9d8590; --out: #4a3640; --on: #5a4450; --circle: #6b5260; --circle-ink: #f1dde6; }
   * { box-sizing: border-box; }
-  html, body { margin: 0; }
+  html, body { margin: 0; height: 100%; }
   body {
+    display: flex; flex-direction: column;
     background: var(--bg); color: var(--ink);
     font-family: "Inter", "Helvetica Neue", Helvetica, Arial, "Noto Sans KR", sans-serif;
     font-feature-settings: "tnum" 1, "cv11" 1;
     -webkit-font-smoothing: antialiased;
     font-size: 3.1vw;
-    padding: 9.5vw 8vw 5vw;
+    padding: 9.5vw 8vw 0;
     user-select: none;
   }
   .title { display: flex; justify-content: center; align-items: center; gap: .85em; font-size: 1.3em; font-weight: 700; }
@@ -42,12 +43,13 @@
   .nav .today { color: var(--mute); font-weight: 400; padding: .2em 1em; }
   .views button { color: var(--mute); min-width: 2em; height: 2.2em; }
   .views button.on { background: var(--on); color: var(--ink); box-shadow: inset 0 1px 4px rgba(110, 90, 100, .16), inset 0 0 2px rgba(110, 90, 100, .08); }
-  .grid { display: grid; grid-template-columns: repeat(7, 1fr); }
+  #body { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+  .grid { flex: 1; display: grid; grid-template-columns: repeat(7, 1fr); }
   .dow { text-align: center; font-weight: 700; padding: 0 0 .7em; }
-  .d { height: 2.75em; padding: .55em 12% 0 0; display: flex; justify-content: flex-end; align-items: flex-start; color: var(--mute); font-size: 1.05em; }
+  .d { min-height: 2.4em; padding: .55em 12% 0 0; display: flex; justify-content: flex-end; align-items: flex-start; color: var(--mute); font-size: 1.05em; }
   .d.out { background: var(--out); }
   .d.today { background: var(--out); }
-  .wk .d { height: 9em; }
+  .wk .d { min-height: 6em; }
   .big { text-align: center; padding: 3em 0; font-size: 1.2em; }
   .big b { display: block; font-size: 3em; line-height: 1.2; }
   .agenda { text-align: center; color: var(--mute); padding: 3em 0; }
@@ -78,8 +80,8 @@
     var h = "";
     if (view === "M") {
       var s = monday(new Date(cur.getFullYear(), cur.getMonth(), 1));
-      h = '<div class="grid">' + head();
       var first = new Date(cur.getFullYear(), cur.getMonth(), 1), dim = new Date(cur.getFullYear(), cur.getMonth() + 1, 0).getDate(), n = Math.ceil((((first.getDay() + 6) % 7) + dim) / 7) * 7;
+      h = '<div class="grid" style="grid-template-rows:auto repeat(' + (n / 7) + ',1fr)">' + head();
       for (var i = 0; i < n; i++) {
         var d = add(s, i), c = "d" + (d.getMonth() !== cur.getMonth() ? " out" : "") + (same(d, now) ? " today" : "");
         h += '<div class="' + c + '"><span>' + pad(d.getDate()) + "</span></div>";
@@ -87,7 +89,7 @@
       h += "</div>";
     } else if (view === "W") {
       var m = monday(cur);
-      h = '<div class="grid wk">' + head();
+      h = '<div class="grid wk" style="grid-template-rows:auto 1fr">' + head();
       for (var j = 0; j < 7; j++) { var w = add(m, j); h += '<div class="d' + (same(w, now) ? " today" : "") + '"><span>' + pad(w.getDate()) + "</span></div>"; }
       h += "</div>";
     } else if (view === "D") {
